@@ -23,6 +23,8 @@ ui <- fluidPage(
                "one row per entry per environment. Then set the",
                "number of replications and, for significance tests,",
                "upload pooled error mean squares (CSV: Trait,MS)."),
+      downloadButton("dlex", "Download example data (CSV)"),
+      tags$hr(),
       uiOutput("means_ui"),
       uiOutput("trait_ui"),
       downloadButton("dl3", "ANOVA CSV"),
@@ -36,7 +38,7 @@ ui <- fluidPage(
         tabPanel("GCA effects & stability", tableOutput("t4")),
         tabPanel("SCA effects", tableOutput("ts")),
         tabPanel("GCA plots",
-                 plotOutput("gplot", height = "640px"),
+                 plotOutput("gplot", height = "auto"),
                  downloadButton("dlp", "Download plot (PNG)")),
         tabPanel("About", br(),
           p("Combining ability analysis for a half diallel",
@@ -138,7 +140,7 @@ server <- function(input, output, session) {
     trs <- names(res)
     n <- length(trs)
     nc <- min(2, n); nr <- ceiling(n / nc)
-    op <- par(mfrow = c(nr, nc), mar = c(7, 4, 2.5, 1),
+    op <- par(mfrow = c(nr, nc), mar = c(6, 4, 2.5, 1),
               mgp = c(2.4, 0.7, 0)); on.exit(par(op))
     for (tr in trs) {
       g <- res[[tr]]$g
@@ -149,10 +151,15 @@ server <- function(input, output, session) {
       abline(h = 0)
     }
   }
-  output$gplot <- renderPlot(draw_gca())
+  output$gplot <- renderPlot(draw_gca(), height = function() {
+    n <- max(1, length(input$traits))
+    320 * ceiling(n / 2)
+  })
+  output$dlex <- downloadHandler("example_replicated_data.csv",
+    function(f) file.copy("example_replicated_data.csv", f))
   output$dlp <- downloadHandler("GCA_effects.png", function(f) {
     n <- length(tabs()$res)
-    png(f, width = 2000, height = 900 * ceiling(n / 2), res = 200)
+    png(f, width = 2400, height = 800 * ceiling(n / 2), res = 180)
     draw_gca(); dev.off()
   })
   output$dl3 <- downloadHandler("Table_ANOVA_combining_ability.csv",

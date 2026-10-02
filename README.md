@@ -1,4 +1,5 @@
 # Pearl Millet Biofortification Diallel
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23101654.svg)](https://doi.org/10.5281/zenodo.23101654)
 
 Companion code for:
@@ -14,76 +15,78 @@ Companion code for:
 author, who conceived and led this research as her doctoral work. The paper is
 published in her memory, in fulfilment of her wish to see it in print.*
 
-## What is here
+## The app
 
-| Path | Contents |
-|------|----------|
-| `R/griffing_engine.R` | Griffing (1956) Method 2, Model 1 combining ability analysis pooled over environments. Base R, no packages |
-| `R/01_reproduce_tables.R` | Reproduces Table 3, Table 4 and Supplementary Table S2 of the paper from the Table S1 means |
-| `R/02_figures.R` | Example figures (GCA effects, Fe-Zn association) |
-| `data/input_format.md` | Expected input format, trait codes and design details |
-| `figures_supplementary/` | Supplementary Figures S1-S9 as published, with captions |
-| `app/` | Shiny app: upload replicated half-diallel data (or entry means) and get the full pooled analysis |
+**https://lalitrolaniya.github.io/pearlmillet-biofortification-diallel/**
 
-The dataset itself is not redistributed here. The entry x environment means
-are published as Supplementary Table S1 on the article page; place them in
-`data/diallel_means.csv` (format in `data/input_format.md`) to run the
-reproduction scripts.
+Runs entirely in the browser (no R installation needed). Upload replicated
+half-diallel data and get the complete combining ability analysis pooled over
+environments, following Griffing (1956) Method 2, Model 1:
 
-## Quick start
+- **ANOVA and genetic parameters**: GCA, SCA, GCA x E, SCA x E and pooled
+  error mean squares with F-tests; variance components; Baker's ratio;
+  average degree of dominance; percent contributions of GCA and SCA
+- **GCA effects and stability**: effects with significance, SE(gi),
+  SE(gi-gj), and GCA x E stability variance per parent
+- **SCA effects**: all crosses with significance
+- **GCA plots**: bar plots of GCA effects per trait, downloadable as PNG
 
-```r
-# from the repository root, after preparing data/diallel_means.csv
-source("R/01_reproduce_tables.R")   # Tables 3, 4 and S2 -> results/tables/
-source("R/02_figures.R")            # figures -> results/figures/
+All result tables can be downloaded as CSV. Any number of parents,
+environments, replications and traits is supported.
 
-# interactive app (upload your own CSV)
-shiny::runApp("app")
-# or without cloning:
-shiny::runGitHub("pearlmillet-biofortification-diallel", "lalitrolaniya")
-```
+## Data format
 
-A browser version of the app (no R needed) is deployed with shinylive at:
-`https://lalitrolaniya.github.io/pearlmillet-biofortification-diallel/`
+One CSV file, one row per plot:
+
+| Genotype | P1 | P2 | Env | Rep | GY | Fe | ... |
+|----------|----|----|-----|-----|------|------|-----|
+| P1 | P1 | P1 | E1 | 1 | 19.89 | 45.58 | ... |
+| P1 x P2 | P1 | P2 | E1 | 1 | 16.45 | 51.22 | ... |
+| P1 x P2 | P1 | P2 | E1 | 2 | 15.80 | 49.75 | ... |
+| P1 x P2 | P1 | P2 | E2 | 1 | 14.91 | 52.10 | ... |
+
+- `Genotype`: entry name (for a parent, its own name; for a cross, any label)
+- `P1`, `P2`: the two parental lines (`P1` = `P2` for a parent entry)
+- `Env`: environment label (E1, E2, ...)
+- `Rep`: replication number within the environment
+- then one column per trait, any number of traits, any names
+
+A ready example is in `data/example_replicated_data.csv` (4 parents,
+2 environments, 3 replications, 2 traits) and can also be downloaded from
+inside the app. Full details are in `data/input_format.md`.
+
+The app also accepts entry x environment means (same columns without `Rep`);
+significance of effects then needs a separate CSV of pooled error mean
+squares (`Trait,MS`).
 
 ## Statistical methods
 
-Griffing (1956) Method 2, Model 1 for a half diallel (parents + F1s, no
-reciprocals), pooled over environments (Singh and Chaudhary 1979). GCA is
-tested against GCA x E, SCA against SCA x E, and the interactions against the
-pooled error (df = 216). Variance components follow eqs. 6-8 of the paper:
+GCA is tested against GCA x E, SCA against SCA x E, and the interactions
+against the pooled error from the replication-level RCBD ANOVA pooled over
+environments. Variance components follow eqs. 6-8 of the paper:
 
 - sigma2_GCA = (MS_GCA - MS_GCAxE) x p / [r x e x (p + 2)]
 - sigma2_SCA = (MS_SCA - MS_SCAxE) / (r x e)
 - Baker's ratio = 2 sigma2_GCA / (2 sigma2_GCA + sigma2_SCA)
 
-## Reproducibility
+The engine (`R/griffing_engine.R`) is base R with no package dependencies
+and can be used directly in scripts.
 
-Running `R/01_reproduce_tables.R` on the Table S1 means reproduces the
-published Tables 3 and 4: GCA effects, standard errors, significance and
-GCA x E stability match exactly, and all mean squares and Baker's ratios
-agree within 0.5%, the residual being due to the two-decimal rounding of the
-published means. The pooled error mean squares (which require
-replication-level data) are taken from Table 3 of the paper.
+## Run locally
 
-## Using the app with your own data
-
-Preferred input is replicated plot-level data: columns `Genotype, P1, P2,
-Env, Rep` followed by one column per trait, one row per plot. The app then
-computes the pooled error itself and gives the complete analysis with
-significance tests. Entry x environment means (same columns without `Rep`)
-are also accepted; significance of effects then needs a separate CSV of
-pooled error mean squares (`Trait,MS`). Any number of parents,
-environments, replications and traits is supported.
+```r
+shiny::runApp("app")
+# or without cloning:
+shiny::runGitHub("pearlmillet-biofortification-diallel", "lalitrolaniya")
+```
 
 ## Citing
 
 Please cite the paper (above). Citation metadata for this repository is in
-`CITATION.cff`.
-To cite this repository itself: https://doi.org/10.5281/zenodo.23101654
+`CITATION.cff`. To cite this repository itself:
+https://doi.org/10.5281/zenodo.23101654
 
 ## License
 
-Code is released under the MIT License. The supplementary figures are from
-the published article's electronic supplementary material; please cite the
-paper when using them.
+Code is released under the MIT License. Please cite the paper when using
+this work.
