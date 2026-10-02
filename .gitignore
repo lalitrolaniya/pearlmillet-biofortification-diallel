@@ -3,3 +3,4 @@
 .Rproj.user
 *.Rproj
 site/
+.DS_Store
