@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the paper below."
+title: "Pearl millet biofortification diallel - companion code"
+authors:
+  - family-names: Rolaniya
+    given-names: Lalit Kumar
+    orcid: "https://orcid.org/0000-0001-8908-1211"
+repository-code: "https://github.com/lalitrolaniya/pearlmillet-biofortification-diallel"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Combining ability and gene action for grain yield and biofortification traits in pearl millet [Pennisetum glaucum (L.) R. Br.]: implications for breeding high-yielding biofortified hybrids in arid regions"
+  authors:
+    - family-names: Punia
+      given-names: Monika
+    - family-names: Sharma
+      given-names: L. D.
+    - family-names: Gothwal
+      given-names: D. K.
+    - family-names: Kajla
+      given-names: Sohan Lal
+    - family-names: Rolaniya
+      given-names: Lalit Kumar
+    - family-names: Sharma
+      given-names: Vaibhav
+    - family-names: Jat
+      given-names: Ram Lal
+  journal: "Theoretical and Applied Genetics"
+  year: 2026
+  volume: 139
+  article-number: "265"
+  doi: "10.1007/s00122-026-05378-4"
