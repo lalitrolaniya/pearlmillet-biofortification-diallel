@@ -35,6 +35,9 @@ ui <- fluidPage(
         tabPanel("ANOVA & genetic parameters", tableOutput("t3")),
         tabPanel("GCA effects & stability", tableOutput("t4")),
         tabPanel("SCA effects", tableOutput("ts")),
+        tabPanel("GCA plots",
+                 plotOutput("gplot", height = "640px"),
+                 downloadButton("dlp", "Download plot (PNG)")),
         tabPanel("About", br(),
           p("Combining ability analysis for a half diallel",
             "(parents + F1s, no reciprocals) pooled over",
@@ -129,6 +132,29 @@ server <- function(input, output, session) {
   output$t3 <- renderTable(tabs()$table3, rownames = TRUE, striped = TRUE)
   output$t4 <- renderTable(tabs()$table4, rownames = TRUE, striped = TRUE)
   output$ts <- renderTable(tabs()$sca, striped = TRUE)
+
+  draw_gca <- function() {
+    res <- tabs()$res
+    trs <- names(res)
+    n <- length(trs)
+    nc <- min(2, n); nr <- ceiling(n / nc)
+    op <- par(mfrow = c(nr, nc), mar = c(7, 4, 2.5, 1),
+              mgp = c(2.4, 0.7, 0)); on.exit(par(op))
+    for (tr in trs) {
+      g <- res[[tr]]$g
+      barplot(g, names.arg = res[[tr]]$parents, las = 2,
+              cex.names = 0.85,
+              col = ifelse(g > 0, "#1F4023", "#B98A1E"), border = NA,
+              main = paste("GCA effects:", tr), ylab = "GCA effect")
+      abline(h = 0)
+    }
+  }
+  output$gplot <- renderPlot(draw_gca())
+  output$dlp <- downloadHandler("GCA_effects.png", function(f) {
+    n <- length(tabs()$res)
+    png(f, width = 2000, height = 900 * ceiling(n / 2), res = 200)
+    draw_gca(); dev.off()
+  })
   output$dl3 <- downloadHandler("Table_ANOVA_combining_ability.csv",
     function(f) write.csv(tabs()$table3, f))
   output$dl4 <- downloadHandler("Table_GCA_effects.csv",
