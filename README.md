@@ -22,7 +22,7 @@ published in her memory, in fulfilment of her wish to see it in print.*
 | `R/02_figures.R` | Example figures (GCA effects, Fe-Zn association) |
 | `data/input_format.md` | Expected input format, trait codes and design details |
 | `figures_supplementary/` | Supplementary Figures S1-S9 as published, with captions |
-| `app/` | Shiny app: upload half-diallel data and get the full pooled analysis |
+| `app/` | Shiny app: upload replicated half-diallel data (or entry means) and get the full pooled analysis |
 
 The dataset itself is not redistributed here. The entry x environment means
 are published as Supplementary Table S1 on the article page; place them in
@@ -67,11 +67,13 @@ replication-level data) are taken from Table 3 of the paper.
 
 ## Using the app with your own data
 
-Upload a CSV of entry x environment means with columns `Genotype, P1, P2,
-Env` followed by one column per trait (see `data/input_format.md`).
-Optionally upload a CSV of pooled error mean squares (`Trait,MS`) to obtain
-significance tests of effects. Any number of parents and environments is
-supported.
+Preferred input is replicated plot-level data: columns `Genotype, P1, P2,
+Env, Rep` followed by one column per trait, one row per plot. The app then
+computes the pooled error itself and gives the complete analysis with
+significance tests. Entry x environment means (same columns without `Rep`)
+are also accepted; significance of effects then needs a separate CSV of
+pooled error mean squares (`Trait,MS`). Any number of parents,
+environments, replications and traits is supported.
 
 ## Citing
 

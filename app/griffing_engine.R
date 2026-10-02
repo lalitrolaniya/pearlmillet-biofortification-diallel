@@ -171,3 +171,37 @@ build_tables <- function(dat, traits, r_reps, error_ms, error_df) {
 
   list(res = res, table3 = t3, table4 = t4, sca = ts2)
 }
+
+# ---------------------------------------------------------------------
+# Replicated (plot-level) data preparation.
+# plot_dat: Genotype, P1, P2, Env, Rep, then one column per trait
+# (one row per plot). For each environment an RCBD ANOVA
+# (trait ~ Rep + Genotype) is fitted; residual SS and df are pooled
+# over environments to give the pooled error MS (df = e(r-1)(g-1)).
+# Returns entry x environment means, error MS per trait, error df,
+# and the number of replications.
+# ---------------------------------------------------------------------
+prep_from_plot_data <- function(plot_dat, traits = NULL) {
+  id <- c("Genotype", "P1", "P2", "Env", "Rep")
+  if (is.null(traits))
+    traits <- names(plot_dat)[!(names(plot_dat) %in% id) &
+                              sapply(plot_dat, is.numeric)]
+  ems <- numeric(0); edf <- NA
+  for (tr in traits) {
+    sse <- 0; dfe <- 0
+    for (env in unique(plot_dat$Env)) {
+      d <- plot_dat[plot_dat$Env == env & !is.na(plot_dat[[tr]]), ]
+      fit <- aov(d[[tr]] ~ factor(d$Rep) + factor(d$Genotype))
+      an  <- anova(fit)
+      sse <- sse + an["Residuals", "Sum Sq"]
+      dfe <- dfe + an["Residuals", "Df"]
+    }
+    ems[tr] <- sse / dfe
+    edf <- dfe
+  }
+  means <- aggregate(plot_dat[traits],
+                     by = plot_dat[c("Genotype", "P1", "P2", "Env")],
+                     FUN = mean, na.rm = TRUE)
+  list(means = means, error_ms = ems, error_df = edf,
+       r = length(unique(plot_dat$Rep)), traits = traits)
+}
