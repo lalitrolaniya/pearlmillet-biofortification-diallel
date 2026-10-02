@@ -1,4 +1,5 @@
 # Pearl Millet Biofortification Diallel
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23101654.svg)](https://doi.org/10.5281/zenodo.23101654)
 
 Companion code for:
 
@@ -79,6 +80,7 @@ environments, replications and traits is supported.
 
 Please cite the paper (above). Citation metadata for this repository is in
 `CITATION.cff`.
+To cite this repository itself: https://doi.org/10.5281/zenodo.23101654
 
 ## License
 
